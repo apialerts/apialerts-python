@@ -3,4 +3,5 @@
 .idea
 sample
 __pycache__/
-dist
+dist/
+build/
