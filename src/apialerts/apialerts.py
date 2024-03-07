@@ -3,6 +3,7 @@ import asyncio
 import json
 from dataclasses import dataclass
 from typing import List, Optional
+import threading
 
 
 class ValidationError(Exception):
@@ -46,7 +47,15 @@ class ApiAlerts(Singleton):
         except ValidationError as e:
             print(f"APIAlerts -> {e}")
             return
-        asyncio.run(self.__post(key, payload))
+
+        thread = threading.Thread(target=self.__post_thread, args=(key, payload))
+        thread.start()
+
+    def __post_thread(self, api_key: str, payload: AlertRequest) -> None:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(self.__post(api_key, payload))
+        loop.close()
 
     @staticmethod
     def __validate_api_key(api_key: Optional[str]) -> str:
@@ -101,7 +110,7 @@ class ApiAlerts(Singleton):
                         response_data = json.loads(response_text)
                         if response.status == 200:
                             project = response_data.get('project')
-                            remaining = response_data.get('remainingQuota2')
+                            remaining = response_data.get('remainingQuota')
                             errors = response_data.get('errors') or []
                             print(f"APIAlerts -> Successfully sent event to {project or '?'}. Remaining Quota = {remaining or '?'}")
                             for error in errors:
