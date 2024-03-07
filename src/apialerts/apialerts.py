@@ -40,6 +40,16 @@ class ApiAlerts(Singleton):
         self.api_key = api_key
         self.logging = logging
 
+    async def send_async(self, data: AlertRequest, api_key: Optional[str] = None) -> None:
+        try:
+            key = self.__validate_api_key(api_key if api_key else self.api_key)
+            payload = self.__validate_data(data)
+        except ValidationError as e:
+            print(f"APIAlerts -> {e}")
+            return
+
+        await self.__post(key, payload)
+
     def send(self, data: AlertRequest, api_key: Optional[str] = None) -> None:
         try:
             key = self.__validate_api_key(api_key if api_key else self.api_key)

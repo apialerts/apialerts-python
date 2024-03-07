@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='apialerts',
-    version='1.0.1',
+    version='1.0.2',
     url='https://github.com/mononz/apialerts-python',
     author='API Alerts',
     author_email='admin@apialerts.com',
