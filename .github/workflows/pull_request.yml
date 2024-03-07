@@ -1,7 +1,7 @@
 name: Publish Python
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -32,9 +32,3 @@ jobs:
 
       - name: Build a binary wheel and a source tarball
         run: python -m build --sdist --wheel --outdir dist/
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}

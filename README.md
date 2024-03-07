@@ -4,16 +4,14 @@ APIAlerts require the use of API Keys to integrate with your projects.
 
 Copy your API Key from the projects page in the mobile app.
 
-Get the App
+__Get the App__
 - Android - [Play Store](https://play.google.com/store/apps/details?id=com.apialerts)
 - iOS/Mac - [App Store](https://apps.apple.com/us/app/magpie-api-alerts/id6476410789)
 
-Links
+__Links__
 - [Integrations](https://apialerts.com/integrations)
 
 ## Installation
-
-Available on PyPI
 
 ```bash
 pip install apialerts
