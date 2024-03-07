@@ -1,17 +1,13 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.1'
-DESCRIPTION = 'API Alerts - Python'
-LONG_DESCRIPTION = 'Python wrapper for the API Alerts service'
-
 setup(
     name='apialerts',
     version='0.0.1',
-    url='https://github.com/mononz/apialerts',
+    url='https://github.com/mononz/apialerts-python',
     author='API Alerts',
     author_email='admin@apialerts.com',
     description='Python wrapper for the API Alerts service',
-    long_description=LONG_DESCRIPTION,
+    long_description='Python wrapper for the API Alerts service',
     packages=find_packages(),
     keywords=['API Alerts', 'push', 'notifications', 'alert', 'monitoring'],
     classifiers=[
