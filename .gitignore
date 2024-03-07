@@ -1,6 +1,6 @@
 .venv
 *.egg-info/
 .idea
-sample.py
+sample
 __pycache__/
 dist

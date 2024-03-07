@@ -23,7 +23,8 @@ pip install apialerts
 ### Sample usage
 
 ```python
-from apialerts import ApiAlerts, AlertRequest
+from src.apialerts.apialerts import ApiAlerts, AlertRequest
+
 
 def alerts_basic():
     # Create the ApiAlerts instance
@@ -40,7 +41,8 @@ def alerts_basic():
 ### Advanced usage
 
 ```python
-from apialerts import ApiAlerts, AlertRequest
+from src.apialerts.apialerts import ApiAlerts, AlertRequest
+
 
 def alerts_advanced():
     alerts = ApiAlerts()
