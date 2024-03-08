@@ -1,5 +1,7 @@
 # API Alerts - Python
 
+[![PyPi version](https://pypip.in/v/apialerts/badge.png)](https://crate.io/packages/$REPO/)
+
 APIAlerts require the use of API Keys to integrate with your projects.
 
 Copy your API Key from the projects page in the mobile app.
@@ -14,15 +16,14 @@ __Links__
 ## Installation
 
 ```bash
-pip install apialerts
+pip install apialerts==1.0.3
 ```
 
 
 ### Sample usage
 
 ```python
-from src.apialerts.apialerts import ApiAlerts, AlertRequest
-
+from apialerts import ApiAlerts, AlertRequest
 
 def alerts_basic():
     # Create the ApiAlerts instance
@@ -39,8 +40,7 @@ def alerts_basic():
 ### Advanced usage
 
 ```python
-from src.apialerts.apialerts import ApiAlerts, AlertRequest
-
+from apialerts import ApiAlerts, AlertRequest
 
 def alerts_advanced():
     alerts = ApiAlerts()
