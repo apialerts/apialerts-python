@@ -1,7 +1,5 @@
 # API Alerts - Python
 
-[![PyPi version](https://pypip.in/v/apialerts/badge.png)](https://crate.io/packages/$REPO/)
-
 APIAlerts require the use of API Keys to integrate with your projects.
 
 Copy your API Key from the projects page in the mobile app.
