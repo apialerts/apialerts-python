@@ -104,7 +104,7 @@ class ApiAlerts(Singleton):
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
             "X-Integration": "python",
-            "X-Version": "0.0.1",
+            "X-Version": "1.0.3",
         }
         payload = {
             'message': payload.message,
