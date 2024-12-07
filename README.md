@@ -1,57 +1,40 @@
-# API Alerts - Python
+# apialerts-python
 
-APIAlerts require the use of API Keys to integrate with your projects.
+Python client for the [apialerts.com](https://apialerts.com/) platform
 
-Copy your API Key from the projects page in the mobile app.
-
-__Get the App__
-- Android - [Play Store](https://play.google.com/store/apps/details?id=com.apialerts)
-- iOS/Mac - [App Store](https://apps.apple.com/us/app/magpie-api-alerts/id6476410789)
-
-__Links__
-- [Integrations](https://apialerts.com/integrations)
+[Docs](https://apialerts.com/docs/python) • [GitHub](https://github.com/apialerts/apialerts-python) • [PyPI](https://pypi.org/project/apialerts/)
 
 ## Installation
 
+Install the latest apialerts package from PyPI
+
 ```bash
-pip install apialerts==1.0.3
+pip install apialerts==<latest-version>
 ```
 
-
-### Sample usage
+### Initialize the client
 
 ```python
-from apialerts import ApiAlerts, AlertRequest
+from apialerts import ApiAlerts
 
-def alerts_basic():
-    # Create the ApiAlerts instance
-    alerts = ApiAlerts()
-    # Construct your message
-    data = AlertRequest(
-        message='Payment Received $10'
-    )
-    # Send alert to you project via your API Key
-    alerts.send(data, 'PROJECT_API_KEY')
+alerts = ApiAlerts()
+# Set a default project API Key and toggle logging
+alerts.configure('Send Event', False)
 ```
 
-
-### Advanced usage
+### Send Events
 
 ```python
-from apialerts import ApiAlerts, AlertRequest
+# Construct your alert with additional tags and a link
+data = AlertRequest(
+    message='Payment Received $10',
+    tags=['Growth', 'Promotion'],    // optional
+    link='https://apialerts.com'     // optional
+)
+    
+# Send alert to your workspace using the default API Key
+alerts.send(data)
 
-def alerts_advanced():
-    alerts = ApiAlerts()
-    # Set a default project API Key and enable logging
-    alerts.configure('DEFAULT_API_KEY', True)
-    # Construct your alert with additional tags and a link
-    data = AlertRequest(
-        message='Payment Received $10',
-        tags=['Growth', 'Promotion'],
-        link='https://apialerts.com'
-    )
-    # Send alert to default project specified in configure()
-    alerts.send(data)
-    # Or, send alert to an alternate project
-    alerts.send(data, 'ALTERNATE_API_KEY')
+# or, Send alert to you project with an alternate API Key
+alerts.send(data, 'your-api-key')
 ```
