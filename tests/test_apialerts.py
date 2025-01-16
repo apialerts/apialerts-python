@@ -13,13 +13,15 @@ class TestApiAlerts(unittest.TestCase):
     def test_validate_data_tags(self):
         data = AlertRequest(
             message='Payment Received $10',
-            tags="stringtag",
+            channel='my-channel',
+            tags="some-tag",
             link=33
         )
         output = self.api_alerts._ApiAlerts__validate_data(data)
 
         expected = AlertRequest(
             message='Payment Received $10',
+            channel='my-channel',
             tags=None,
             link=None
         )
