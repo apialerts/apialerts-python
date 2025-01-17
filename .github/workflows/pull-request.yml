@@ -28,4 +28,4 @@ jobs:
         uses: ./.github/actions/notify
         with:
           api-key: ${{ secrets.APIALERTS_API_KEY }}
-          alert_type: 'build'
+          alert-type: 'build'
