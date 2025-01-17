@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: publish
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Send Publish Alert
         uses: ./.github/workflows/use-notify.yml
         with:
