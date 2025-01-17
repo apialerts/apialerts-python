@@ -1,7 +1,6 @@
 .venv
 *.egg-info/
 .idea
-sample
 __pycache__/
 dist/
 build/
