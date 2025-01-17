@@ -1,6 +1,9 @@
 import os
+import sys
 import argparse
-from src.apialerts.apialerts import ApiAlerts, AlertRequest, ValidationError
+
+# Add the src directory to the PYTHONPATH
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Send alert on build, release, or publish")
