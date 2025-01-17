@@ -7,20 +7,25 @@ on:
 
 jobs:
   build:
-    uses: ./.github/actions/use-build.yml
-
-  test:
-    needs: build
-    uses: ./.github/actions/use-test.yml
-
-  notify:
     runs-on: ubuntu-latest
-    needs: test
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Send Build Alert
-        uses: ./.github/actions/use-notify.yml
+      - name: Setup Python and Install Dependencies
+        uses: ./.github/actions/setup
         with:
-          alert_type: '--build'
+          python-version: 3.13
+
+      - name: Test
+        uses: ./.github/actions/test
+
+      - name: Build
+        uses: ./.github/actions/build
+
+      - name: Notify
+        uses: ./.github/actions/notify
+        with:
+          api-key: ${{ secrets.APIALERTS_API_KEY }}
+          alert_type: 'build'
