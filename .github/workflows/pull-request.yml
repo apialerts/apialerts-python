@@ -13,13 +13,10 @@ jobs:
     needs: build
     uses: ./.github/workflows/use-test.yml
 
-  send_alert:
+  notify:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Send Build Alert
         uses: ./.github/workflows/use-notify.yml
         with:
