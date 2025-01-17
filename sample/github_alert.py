@@ -1,11 +1,5 @@
 import os
-import sys
 import argparse
-
-# Add the src directory to the Python path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.abspath(os.path.join(current_dir, "../src"))
-sys.path.insert(0, parent_dir)
 
 from src.apialerts import AlertRequest, ApiAlerts
 from src.apialerts.apialerts import ValidationError
