@@ -7,11 +7,11 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/use-build.yml
+    uses: ./.github/actions/use-build.yml
 
   test:
     needs: build
-    uses: ./.github/workflows/use-test.yml
+    uses: ./.github/actions/use-test.yml
 
   notify:
     runs-on: ubuntu-latest
@@ -21,6 +21,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Send Build Alert
-        uses: ./.github/workflows/use-notify.yml
+        uses: ./.github/actions/use-notify.yml
         with:
           alert_type: '--build'

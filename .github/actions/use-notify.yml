@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python & Dependencies
-        uses: ./.github/workflows/use-python.yml
+        uses: ./.github/actions/use-python.yml
 
       - name: Send Alert
         run: python sample/github_alert.py ${{ inputs.alert_type }}
