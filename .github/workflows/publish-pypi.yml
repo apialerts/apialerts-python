@@ -33,8 +33,20 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: python -m build --sdist --wheel --outdir dist/
 
+      - name: Send Build Alert
+        working-directory: ./sample
+        run: python sample/github_alert.py --release
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Send Build Alert
+        working-directory: ./sample
+        run: python sample/github_alert.py --publish
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
