@@ -5,10 +5,9 @@ inputs:
   api-key:
     description: "API key for alerts"
     required: true
-  alert_type:
+  alert-type:
     description: "Either build|release|publish"
     required: true
-    type: string
 
 runs:
   using: "composite"
@@ -18,3 +17,4 @@ runs:
       run: python github_alert.py --${{ inputs.alert_type }}
       env:
         APIALERTS_API_KEY: ${{ inputs.api-key }}
+      shell: bash

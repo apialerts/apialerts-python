@@ -1,0 +1,13 @@
+name: "Build"
+description: "Builds a binary wheel and a source tarball"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install pypa/build
+      run: python -m pip install build
+      shell: bash
+
+    - name: Build a binary wheel and a source tarball
+      run: python -m build --sdist --wheel --outdir dist/
+      shell: bash

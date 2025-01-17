@@ -6,3 +6,4 @@ runs:
   steps:
     - name: Run tests
       run: python -m unittest discover tests
+      shell: bash

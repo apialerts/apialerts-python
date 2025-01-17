@@ -27,7 +27,7 @@ jobs:
         uses: ./.github/actions/notify
         with:
           api-key: ${{ secrets.APIALERTS_API_KEY }}
-          alert_type: 'release'
+          alert-type: 'release'
 
       - name: Publish to PyPI
         uses: ./.github/actions/publish
@@ -38,4 +38,4 @@ jobs:
         uses: ./.github/actions/notify
         with:
           api-key: ${{ secrets.APIALERTS_API_KEY }}
-          alert_type: 'publish'
+          alert-type: 'publish'
