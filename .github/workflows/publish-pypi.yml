@@ -35,7 +35,7 @@ jobs:
 
       - name: Send Build Alert
         working-directory: ./sample
-        run: python sample/github_alert.py --release
+        run: python github_alert.py --release
         env:
           APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
 
@@ -47,6 +47,6 @@ jobs:
 
       - name: Send Build Alert
         working-directory: ./sample
-        run: python sample/github_alert.py --publish
+        run: python github_alert.py --publish
         env:
           APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
