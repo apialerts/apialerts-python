@@ -1,0 +1,23 @@
+name: Notify
+
+on:
+  workflow_call:
+    inputs:
+      alert_type:
+        description: 'Type of alert to send'
+        required: true
+        type: string
+
+jobs:
+  send_alert:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Send Alert
+        working-directory: ./sample
+        run: python github_alert.py ${{ inputs.alert_type }}
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
