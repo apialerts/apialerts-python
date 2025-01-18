@@ -15,7 +15,7 @@ runs:
     - name: Send Build Alert
       run: |
           pip install -e .
-          python sample/github_alert.py --${{ inputs.alert_type }}
+          python sample/github_alert.py --${{ inputs.alert-type }}
       env:
         APIALERTS_API_KEY: ${{ inputs.api-key }}
       shell: bash
