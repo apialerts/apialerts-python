@@ -30,6 +30,9 @@ Note: The ApiAlerts class is implemented as a singleton.
 ### Send Events
 
 ```python
+from apialerts import ApiAlerts
+from apialerts.models.event import ApiAlertsEvent
+
 # Construct your alert with additional channel, tags and a link
 data = ApiAlertsEvent(
     message='Payment Received',    # required
