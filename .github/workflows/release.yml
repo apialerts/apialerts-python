@@ -1,9 +1,8 @@
-name: Pull Request
+name: Release
 
 on:
-  pull_request:
-    branches:
-      - main
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -28,4 +27,4 @@ jobs:
         uses: ./.github/actions/notify
         with:
           api-key: ${{ secrets.APIALERTS_API_KEY }}
-          alert-type: 'build'
+          alert-type: 'release'

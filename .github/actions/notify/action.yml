@@ -1,0 +1,21 @@
+name: "Notify"
+description: "Sends a notification"
+
+inputs:
+  api-key:
+    description: "API key for alerts"
+    required: true
+  alert-type:
+    description: "Either build|release|publish"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Send Build Alert
+      run: |
+          pip install -e .
+          python sample/github_alert.py --${{ inputs.alert-type }}
+      env:
+        APIALERTS_API_KEY: ${{ inputs.api-key }}
+      shell: bash
