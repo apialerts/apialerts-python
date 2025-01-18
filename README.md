@@ -30,15 +30,14 @@ Note: The ApiAlerts class is implemented as a singleton.
 ### Send Events
 
 ```python
-from apialerts import ApiAlerts
-from apialerts.models.event import ApiAlertsEvent
+from apialerts import ApiAlerts, ApiAlertsEvent
 
 # Construct your alert with additional channel, tags and a link
 data = ApiAlertsEvent(
-    message='Payment Received',    # required
-    channel='email',               # optional
-    tags=['Growth', 'Promotion'],  # optional
-    link='https://apialerts.com'   # optional
+    message='Payment Received',   # required
+    channel='revenue',            # optional
+    tags=['Growth', 'Promotion'], # optional
+    link='https://stripe.com'  # optional
 )
 # Send alert to your workspace using the default API Key
 ApiAlerts.send(data)

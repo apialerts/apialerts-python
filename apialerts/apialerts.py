@@ -1,5 +1,5 @@
 from .client import _Client
-from .models.event import ApiAlertsEvent
+from .event import ApiAlertsEvent
 from typing import Optional
 
 

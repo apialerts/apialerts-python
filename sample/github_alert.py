@@ -1,8 +1,7 @@
 import asyncio
 import os
 import argparse
-from apialerts import ApiAlerts
-from apialerts.models.event import ApiAlertsEvent
+from apialerts import ApiAlerts, ApiAlertsEvent
 
 # Call from GitHub Actions as `python sample/github_alert.py --build`
 

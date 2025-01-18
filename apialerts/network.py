@@ -2,11 +2,11 @@ import aiohttp
 import dataclasses
 import json
 from typing import Any, Dict
-from apialerts.constants import _X_INTEGRATION, _X_VERSION, _BASE_URL
-from apialerts.models.event import ApiAlertsEvent
+from .constants import _X_INTEGRATION, _X_VERSION, _BASE_URL
+from .event import ApiAlertsEvent
 
 
-async def send_event(api_key: str, payload: ApiAlertsEvent, debug: bool) -> None:
+async def _send_event(api_key: str, payload: ApiAlertsEvent, debug: bool) -> None:
     """
     Send a POST request to the API Alerts service.
 
@@ -26,13 +26,13 @@ async def send_event(api_key: str, payload: ApiAlertsEvent, debug: bool) -> None
         async with aiohttp.ClientSession() as session:
             async with session.post(_BASE_URL, headers=headers, json=body) as response:
                 if debug:
-                    await handle_response(response)
+                    await __handle_response(response)
     except Exception as e:
         if debug:
             print(f'x (apialerts.com) Error: {e}')
 
 
-async def handle_response(response: aiohttp.ClientResponse) -> None:
+async def __handle_response(response: aiohttp.ClientResponse) -> None:
     """
     Handle the response from the API Alerts service.
 

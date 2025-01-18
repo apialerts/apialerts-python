@@ -1,11 +1,16 @@
 import asyncio
 from typing import Optional
 
-from .models.event import ApiAlertsEvent
-from .network.network import send_event
+from .event import ApiAlertsEvent
+from .network import _send_event
 
 
 class _Client:
+    """
+    _Client is an internal class for handling API interactions.
+    It is not intended to be used directly by users of the apialerts package.
+    """
+
     def __init__(self) -> None:
         """
         Initialize the Client with default values.
@@ -61,7 +66,7 @@ class _Client:
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.create_task(send_event(api_key, data, self.debug))
+        loop.create_task(_send_event(api_key, data, self.debug))
         loop.run_until_complete(asyncio.sleep(0))
 
     async def send_with_api_key_async(self, api_key: str, data: ApiAlertsEvent) -> None:
@@ -78,7 +83,7 @@ class _Client:
         if data.message == '':
             return
 
-        await send_event(api_key, data, self.debug)
+        await _send_event(api_key, data, self.debug)
 
     @staticmethod
     def validate_event(event: ApiAlertsEvent) -> [str]:
