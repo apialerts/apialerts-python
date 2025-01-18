@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+
 @dataclass
 class Event:
     """
@@ -16,6 +17,7 @@ class Event:
     channel: Optional[str] = None
     tags: Optional[List[str]] = None
     link: Optional[str] = None
+
 
 def _validate_event(event: 'Event') -> [str]:
     """

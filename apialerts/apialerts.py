@@ -1,6 +1,7 @@
 from .client import Client
 from .event import Event
 
+
 class ApiAlerts:
     _instance: 'ApiAlerts' = None
 
