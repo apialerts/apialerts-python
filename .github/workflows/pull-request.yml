@@ -24,8 +24,8 @@ jobs:
       - name: Build
         uses: ./.github/actions/build
 
-      - name: Notify
-        uses: ./.github/actions/notify
-        with:
-          api-key: ${{ secrets.APIALERTS_API_KEY }}
-          alert-type: 'build'
+#      - name: Notify
+#        uses: ./.github/actions/notify
+#        with:
+#          api-key: ${{ secrets.APIALERTS_API_KEY }}
+#          alert-type: 'build'

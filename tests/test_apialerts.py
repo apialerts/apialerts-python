@@ -1,7 +1,6 @@
 import unittest
 from src.apialerts.apialerts import ApiAlerts, AlertRequest, ValidationError
 
-
 class TestApiAlerts(unittest.TestCase):
     def setUp(self):
         self.api_alerts = ApiAlerts()
