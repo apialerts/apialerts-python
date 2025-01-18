@@ -1,6 +1,5 @@
 import asyncio
 from typing import Optional
-
 from .event import Event, _validate_event
 from .network.network import send_event
 

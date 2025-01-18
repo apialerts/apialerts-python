@@ -1,9 +1,9 @@
 import asyncio
 import os
 import argparse
-
 from apialerts import ApiAlerts
 from apialerts.event import Event
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Send alert on build, release, or publish")

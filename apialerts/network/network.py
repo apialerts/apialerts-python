@@ -1,10 +1,9 @@
 import aiohttp
+import dataclasses
 import json
 from typing import Any, Dict
-
 from apialerts.event import Event
 from apialerts.constants import X_INTEGRATION, X_VERSION, BASE_URL
-from apialerts.network.json import DataClassAsJson
 
 
 async def send_event(api_key: str, payload: Event, debug: bool) -> None:
@@ -23,7 +22,7 @@ async def send_event(api_key: str, payload: Event, debug: bool) -> None:
     }
 
     try:
-        body = json.dumps(payload, cls=DataClassAsJson)
+        body = dataclasses.asdict(payload)
         async with aiohttp.ClientSession() as session:
             async with session.post(BASE_URL, headers=headers, json=body) as response:
                 if debug:
