@@ -1,34 +1,53 @@
 from .client import Client
 from .models.event import ApiAlertsEvent
+from typing import Optional
 
 
 class ApiAlerts:
-    _instance: 'ApiAlerts' = None
+    _instance: Optional['ApiAlerts'] = None
+    _client: Optional[Client] = None
 
-    def __init__(self) -> None:
-        self.client: Client = Client()
-
-    def __new__(cls, *args, **kwargs) -> 'ApiAlerts':
-        if not cls._instance:
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
             cls._instance = super(ApiAlerts, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def configure(self, api_key: str, debug: bool = False) -> None:
+    def __init__(self) -> None:
+        if not ApiAlerts._client:
+            ApiAlerts._client = Client()
+
+    @classmethod
+    def _ensure_client(cls) -> None:
+        """Ensure the client is initialized."""
+        if not cls._client:
+            cls._client = Client()
+
+    @classmethod
+    def configure(cls, api_key: str, debug: bool = False) -> None:
         """Configure the API client with a default API key and debug (logging) mode."""
-        self.client.configure(api_key, debug)
+        cls._ensure_client()
+        cls._client.configure(api_key, debug)
 
-    def send(self, data: ApiAlertsEvent) -> None:
+    @classmethod
+    def send(cls, data: ApiAlertsEvent) -> None:
         """Send the alert asynchronously in the background."""
-        self.client.send(data)
+        cls._ensure_client()
+        cls._client.send(data)
 
-    async def send_async(self, data: ApiAlertsEvent) -> None:
-        """Send the alert asynchronously and wait for the response. Use send() unless you need to wait for the response."""
-        await self.client.send_async(data)
+    @classmethod
+    async def send_async(cls, data: ApiAlertsEvent) -> None:
+        """Send the alert asynchronously and wait for the response."""
+        cls._ensure_client()
+        await cls._client.send_async(data)
 
-    def send_with_api_key(self, api_key: str, data: ApiAlertsEvent) -> None:
-        """Send the alert asynchronously in the background with a different api key than configure()."""
-        self.client.send_with_api_key(api_key, data)
+    @classmethod
+    def send_with_api_key(cls, api_key: str, data: ApiAlertsEvent) -> None:
+        """Send the alert asynchronously in the background with a different API key than configure()."""
+        cls._ensure_client()
+        cls._client.send_with_api_key(api_key, data)
 
-    async def send_with_api_key_async(self, api_key: str, data: ApiAlertsEvent) -> None:
-        """Send the alert asynchronously with a different API key than configure() and wait for the response. Use send_with_api_key() unless you need to wait for the response."""
-        await self.client.send_with_api_key_async(api_key, data)
+    @classmethod
+    async def send_with_api_key_async(cls, api_key: str, data: ApiAlertsEvent) -> None:
+        """Send the alert asynchronously with a different API key than configure() and wait for the response."""
+        cls._ensure_client()
+        await cls._client.send_with_api_key_async(api_key, data)
