@@ -13,7 +13,6 @@ runs:
   using: "composite"
   steps:
     - name: Send Build Alert
-      working-directory: ./sample
       run: |
           pip install -e .
           python sample/github_alert.py --${{ inputs.alert_type }}
