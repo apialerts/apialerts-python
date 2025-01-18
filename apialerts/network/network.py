@@ -2,11 +2,11 @@ import aiohttp
 import dataclasses
 import json
 from typing import Any, Dict
-from apialerts.event import Event
 from apialerts.constants import X_INTEGRATION, X_VERSION, BASE_URL
+from apialerts.models.event import ApiAlertsEvent
 
 
-async def send_event(api_key: str, payload: Event, debug: bool) -> None:
+async def send_event(api_key: str, payload: ApiAlertsEvent, debug: bool) -> None:
     """
     Send a POST request to the API Alerts service.
 
@@ -15,10 +15,10 @@ async def send_event(api_key: str, payload: Event, debug: bool) -> None:
     :param debug: Enable debug mode if True.
     """
     headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "X-Integration": X_INTEGRATION,
-        "X-Version": X_VERSION,
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json',
+        'X-Integration': X_INTEGRATION,
+        'X-Version': X_VERSION,
     }
 
     try:
@@ -29,7 +29,7 @@ async def send_event(api_key: str, payload: Event, debug: bool) -> None:
                     await handle_response(response)
     except Exception as e:
         if debug:
-            print(f"x (apialerts.com) Error: {e}")
+            print(f'x (apialerts.com) Error: {e}')
 
 
 async def handle_response(response: aiohttp.ClientResponse) -> None:
@@ -43,13 +43,13 @@ async def handle_response(response: aiohttp.ClientResponse) -> None:
         response_data: Dict[str, Any] = json.loads(response_text)
         workspace = response_data.get('workspace')
         channel = response_data.get('channel')
-        print(f"✓ (apialerts.com) Alert sent to {workspace or '?'} ({channel or '?'}).")
+        print(f'✓ (apialerts.com) Alert sent to {workspace or '?'} ({channel or '?'}).')
         errors = response_data.get('errors') or []
         for error in errors:
-            print(f"! (apialerts.com) Warning: {error}")
+            print(f'! (apialerts.com) Warning: {error}')
     elif response.status != 200 and response_text and response_text.startswith('{'):
         response_data: Dict[str, Any] = json.loads(response_text)
         message = response_data.get('message')
-        print(f"x (apialerts.com) Error: {message or '?'}")
+        print(f'x (apialerts.com) Error: {message or '?'}')
     else:
-        print(f"x (apialerts.com) Error: Something went wrong {response.status}")
+        print(f'x (apialerts.com) Error: Something went wrong {response.status}')

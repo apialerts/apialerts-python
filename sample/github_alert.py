@@ -2,7 +2,7 @@ import asyncio
 import os
 import argparse
 from apialerts import ApiAlerts
-from apialerts.event import Event
+from apialerts.models.event import ApiAlertsEvent
 
 
 def parse_args():
@@ -32,7 +32,7 @@ def create_event(build, release, publish):
         event_message = 'Python - PyPI publish success'
         event_tags = ['CI/CD', 'Python', 'Deploy']
 
-    return Event(
+    return ApiAlertsEvent(
         message=event_message,
         channel=event_channel,
         tags=event_tags,

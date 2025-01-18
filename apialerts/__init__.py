@@ -15,4 +15,4 @@ __copyright__ = 'Copyright 2025 API Alerts'
 __version__ = '1.1.0'
 
 from .apialerts import ApiAlerts
-from .event import Event
+from .models.event import ApiAlertsEvent
