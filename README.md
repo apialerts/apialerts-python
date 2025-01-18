@@ -9,7 +9,7 @@ Python client for the [apialerts.com](https://apialerts.com/) platform
 Install the latest apialerts package from PyPI
 
 ```bash
-pip install apialerts==<latest-version>
+pip install apialerts
 ```
 
 ### Initialize the client

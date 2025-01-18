@@ -9,7 +9,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 requires-python = ">=3.8"
 keywords = ["API Alerts", "push", "notifications", "alert", "monitoring"]
-authors = [{ name = "API Alerts" }]
+authors = [{ name = "API Alerts", email = "support@apialerts.com" }]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Operating System :: OS Independent",
@@ -32,10 +32,10 @@ classifiers = [
 dynamic = ["version", "dependencies"]
 
 [project.urls]
-homepage = "https://apialerts.com"
+Homepage = "https://apialerts.com"
 Documentation = "https://apialerts.com/docs/python"
 Repository = "https://github.com/apialerts/apialerts-python"
-"Issue tracker" = "https://github.com/apialerts/apialerts-python/issues"
+Issues = "https://github.com/apialerts/apialerts-python/issues"
 
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }
