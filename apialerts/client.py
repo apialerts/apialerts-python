@@ -5,7 +5,7 @@ from .models.event import ApiAlertsEvent
 from .network.network import send_event
 
 
-class Client:
+class _Client:
     def __init__(self) -> None:
         """
         Initialize the Client with default values.

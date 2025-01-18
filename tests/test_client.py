@@ -1,17 +1,17 @@
 import unittest
 
 from apialerts.apialerts import ApiAlertsEvent
-from apialerts.client import Client
+from apialerts.client import _Client
 
 
 class TestClient(unittest.TestCase):
     def test_client_init(self):
-        client = Client()
+        client = _Client()
         self.assertIsNone(client.api_key)
         self.assertEqual(client.debug, False)
 
     def test_client_configure(self):
-        client = Client()
+        client = _Client()
         self.assertIsNone(client.api_key)
         self.assertEqual(client.debug, False)
 
@@ -45,7 +45,7 @@ class TestClient(unittest.TestCase):
             tags=['tag1', 'tag2'],
             link='http://example.com'
         )
-        result = Client.validate_event(data)
+        result = _Client.validate_event(data)
         self.assertEqual(result, [])
 
     def test_event_validate_invalid_all_except_message(self):
@@ -55,7 +55,7 @@ class TestClient(unittest.TestCase):
             tags='tag1',
             link=77
         )
-        result = Client.validate_event(data)
+        result = _Client.validate_event(data)
         validations = [
             '! (apialerts.com) Validation: Dropping channel from alert - channel must be a string.',
             '! (apialerts.com) Validation: Dropping tags from alert - tags must be a list of strings',
@@ -70,7 +70,7 @@ class TestClient(unittest.TestCase):
             tags=['tag1', 'tag2'],
             link='http://example.com'
         )
-        result = Client.validate_event(data)
+        result = _Client.validate_event(data)
         validations = ['! (apialerts.com) Validation: Dropping channel from alert - channel must be a string.']
         self.assertEqual(result, validations)
 
@@ -81,7 +81,7 @@ class TestClient(unittest.TestCase):
             tags=['tag1', 'tag2'],
             link='http://example.com'
         )
-        result = Client.validate_event(data)
+        result = _Client.validate_event(data)
         validations = ['x (apialerts.com) Validation: Message must be a string']
         self.assertEqual(result, validations)
 
@@ -92,7 +92,7 @@ class TestClient(unittest.TestCase):
             tags='tag1',
             link='http://example.com'
         )
-        result = Client.validate_event(data)
+        result = _Client.validate_event(data)
         validations = ['! (apialerts.com) Validation: Dropping tags from alert - tags must be a list of strings']
         self.assertEqual(result, validations)
 
@@ -103,7 +103,7 @@ class TestClient(unittest.TestCase):
             tags=['tag1', 'tag2'],
             link=123
         )
-        result = Client.validate_event(data)
+        result = _Client.validate_event(data)
         validations = ['! (apialerts.com) Validation: Dropping link from alert - link must be a list of strings']
         self.assertEqual(result, validations)
 

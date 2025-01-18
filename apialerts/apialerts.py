@@ -1,11 +1,11 @@
-from .client import Client
+from .client import _Client
 from .models.event import ApiAlertsEvent
 from typing import Optional
 
 
 class ApiAlerts:
     _instance: Optional['ApiAlerts'] = None
-    _client: Optional[Client] = None
+    _client: Optional[_Client] = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -14,13 +14,13 @@ class ApiAlerts:
 
     def __init__(self) -> None:
         if not ApiAlerts._client:
-            ApiAlerts._client = Client()
+            ApiAlerts._client = _Client()
 
     @classmethod
     def _ensure_client(cls) -> None:
         """Ensure the client is initialized."""
         if not cls._client:
-            cls._client = Client()
+            cls._client = _Client()
 
     @classmethod
     def configure(cls, api_key: str, debug: bool = False) -> None:
