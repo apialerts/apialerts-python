@@ -12,7 +12,7 @@ __title__ = 'apialerts-python'
 __author__ = 'apialerts'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2025 API Alerts'
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 from .apialerts import ApiAlerts
 from .models.event import ApiAlertsEvent
