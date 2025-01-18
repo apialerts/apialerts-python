@@ -15,8 +15,8 @@ runs:
     - name: Send Build Alert
       working-directory: ./sample
       run: |
-          export PYTHONPATH=../src
-          python github_alert.py --${{ inputs.alert_type }}
+          pip install -e .
+          python sample/github_alert.py --${{ inputs.alert_type }}
       env:
         APIALERTS_API_KEY: ${{ inputs.api-key }}
       shell: bash
