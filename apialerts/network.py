@@ -1,6 +1,8 @@
 import aiohttp
+import certifi
 import dataclasses
 import json
+import ssl
 from typing import Any, Dict
 from .constants import _X_INTEGRATION, _X_VERSION, _BASE_URL
 from .event import ApiAlertsEvent
@@ -22,8 +24,10 @@ async def _send_event(api_key: str, payload: ApiAlertsEvent, debug: bool) -> Non
     }
 
     try:
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
         body = dataclasses.asdict(payload)
-        async with aiohttp.ClientSession() as session:
+        connector = aiohttp.TCPConnector(ssl=ssl_context)
+        async with aiohttp.ClientSession(connector=connector) as session:
             async with session.post(_BASE_URL, headers=headers, json=body) as response:
                 if debug:
                     await __handle_response(response)
