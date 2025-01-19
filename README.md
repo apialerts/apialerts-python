@@ -37,7 +37,7 @@ data = ApiAlertsEvent(
     message='Payment Received',   # required
     channel='revenue',            # optional
     tags=['Growth', 'Promotion'], # optional
-    link='https://stripe.com'  # optional
+    link='https://stripe.com'     # optional
 )
 # Send alert to your workspace using the default API Key
 ApiAlerts.send(data)
