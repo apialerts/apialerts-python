@@ -35,7 +35,7 @@ from apialerts import ApiAlerts, ApiAlertsEvent
 # Construct your alert with additional channel, tags and a link
 data = ApiAlertsEvent(
     message='Payment Received',   # required
-    channel='revenue',            # optional
+    channel='revenue',            # optional, uses the default channel if not provided
     tags=['Growth', 'Promotion'], # optional
     link='https://stripe.com'     # optional
 )
