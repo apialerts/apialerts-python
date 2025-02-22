@@ -1,8 +1,6 @@
-# apialerts-python
+# API Alerts • Python Client
 
-Python client for the [apialerts.com](https://apialerts.com/) platform
-
-[Docs](https://apialerts.com/docs/python) • [GitHub](https://github.com/apialerts/apialerts-python) • [PyPI](https://pypi.org/project/apialerts/)
+[GitHub Repo](https://github.com/apialerts/apialerts-python) • [PyPI](https://pypi.org/project/apialerts/)
 
 ## Installation
 
@@ -47,8 +45,3 @@ ApiAlerts.send_with_api_key('your-api-key', data)
 ```
 
 The send_async() and send_with_api_key_async() methods are also available if you need to wait for a successful execution. However, the send() functions are generally always preferred.
-
-
-### Feedback & Support
-
-If you have any questions or feedback, please create an issue on our GitHub repository. We are always looking to improve our service and would love to hear from you. Thanks for using API Alerts!
