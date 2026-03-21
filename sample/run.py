@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import os
+import sys
 
 from apialerts import ApiAlerts, Event
 
@@ -17,8 +18,8 @@ async def main() -> None:
 
     api_key = os.environ.get('APIALERTS_API_KEY', '')
     if not api_key:
-        print('Error: APIALERTS_API_KEY environment variable is not set')
-        return
+        print('Error: APIALERTS_API_KEY environment variable is not set', file=sys.stderr)
+        sys.exit(1)
 
     ApiAlerts.configure(api_key, debug=True)
 
@@ -34,8 +35,8 @@ async def main() -> None:
             link=link,
         ))
         if not result.success:
-            print(f'Error: {result.error}')
-            return
+            print(f'Error: {result.error}', file=sys.stderr)
+            sys.exit(1)
         print(f'✓ Sent to {result.workspace} ({result.channel})')
 
     elif args.release:
@@ -48,8 +49,8 @@ async def main() -> None:
             link=link,
         ))
         if not result.success:
-            print(f'Error: {result.error}')
-            return
+            print(f'Error: {result.error}', file=sys.stderr)
+            sys.exit(1)
         print(f'✓ Sent to {result.workspace} ({result.channel})')
 
     elif args.publish:
@@ -62,16 +63,16 @@ async def main() -> None:
             link=link,
         ))
         if not result.success:
-            print(f'Error: {result.error}')
-            return
+            print(f'Error: {result.error}', file=sys.stderr)
+            sys.exit(1)
         print(f'✓ Sent to {result.workspace} ({result.channel})')
 
     else:
         # Integration test — minimal + full
         r1 = await ApiAlerts.send_async(Event(message='Python SDK - minimal'))
         if not r1.success:
-            print(f'Error (minimal): {r1.error}')
-            return
+            print(f'Error (minimal): {r1.error}', file=sys.stderr)
+            sys.exit(1)
         print(f'✓ sent to {r1.workspace} ({r1.channel})')
 
         r2 = await ApiAlerts.send_async(Event(
@@ -84,8 +85,8 @@ async def main() -> None:
             data={'version': '2.0.0'},
         ))
         if not r2.success:
-            print(f'Error (full): {r2.error}')
-            return
+            print(f'Error (full): {r2.error}', file=sys.stderr)
+            sys.exit(1)
         print(f'✓ sent to {r2.workspace} ({r2.channel})')
 
 
