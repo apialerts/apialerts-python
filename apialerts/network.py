@@ -9,7 +9,7 @@ from .event import Event
 from .result import SendResult
 
 _INTEGRATION = 'python'
-_VERSION = '2.0.0'
+_VERSION = '1.2.0'
 _BASE_URL = 'https://api.apialerts.com/event'
 
 
