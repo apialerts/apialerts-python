@@ -29,7 +29,8 @@ classifiers = [
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
-dynamic = ["version", "dependencies"]
+version = "2.0.0"
+dependencies = []
 
 [project.urls]
 Homepage = "https://apialerts.com"
@@ -37,8 +38,6 @@ Documentation = "https://apialerts.com/docs/python"
 Repository = "https://github.com/apialerts/apialerts-python"
 Issues = "https://github.com/apialerts/apialerts-python/issues"
 
-[tool.setuptools.dynamic]
-dependencies = { file = "requirements.txt" }
 
 [tool.setuptools]
 packages = ["apialerts"]

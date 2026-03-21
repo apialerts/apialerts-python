@@ -1,53 +1,57 @@
-from .client import _Client
-from .event import ApiAlertsEvent
-from typing import Optional
+from __future__ import annotations
+
+import sys
+import threading
+from typing import ClassVar, Optional
+
+from .client import ApiAlertsClient
+from .event import Event
+from .result import SendResult
+
+_lock = threading.Lock()
 
 
 class ApiAlerts:
-    _instance: Optional['ApiAlerts'] = None
-    _client: Optional[_Client] = None
+    """Global singleton. Call configure() once at startup."""
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(ApiAlerts, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
-
-    def __init__(self) -> None:
-        if not ApiAlerts._client:
-            ApiAlerts._client = _Client()
-
-    @classmethod
-    def _ensure_client(cls) -> None:
-        """Ensure the client is initialized."""
-        if not cls._client:
-            cls._client = _Client()
+    _client: ClassVar[Optional[ApiAlertsClient]] = None
 
     @classmethod
     def configure(cls, api_key: str, debug: bool = False) -> None:
-        """Configure the API client with a default API key and debug (logging) mode."""
-        cls._ensure_client()
-        cls._client.configure(api_key, debug)
+        """Configure the global client. Subsequent calls are no-ops."""
+        with _lock:
+            if cls._client is not None:
+                return
+            cls._client = ApiAlertsClient(api_key, debug=debug)
 
     @classmethod
-    def send(cls, data: ApiAlertsEvent) -> None:
-        """Send the alert asynchronously in the background."""
-        cls._ensure_client()
-        cls._client.send(data)
+    def set_overrides(cls, integration: str, version: str, base_url: str) -> None:
+        if cls._client is not None:
+            cls._client.set_overrides(integration, version, base_url)
 
     @classmethod
-    async def send_async(cls, data: ApiAlertsEvent) -> None:
-        """Send the alert asynchronously and wait for the response."""
-        cls._ensure_client()
-        await cls._client.send_async(data)
+    def send(cls, event: Event) -> None:
+        """Fire-and-forget. Never raises. Logs critical errors to stderr."""
+        if cls._client is None:
+            print('x (apialerts.com) Error: client not configured', file=sys.stderr)
+            return
+        cls._client.send(event)
 
     @classmethod
-    def send_with_api_key(cls, api_key: str, data: ApiAlertsEvent) -> None:
-        """Send the alert asynchronously in the background with a different API key than configure()."""
-        cls._ensure_client()
-        cls._client.send_with_api_key(api_key, data)
+    async def send_async(cls, event: Event) -> SendResult:
+        """Awaitable send. Never raises — check result.success instead."""
+        if cls._client is None:
+            return SendResult(success=False, error='client not configured')
+        return await cls._client.send_async(event)
 
     @classmethod
-    async def send_with_api_key_async(cls, api_key: str, data: ApiAlertsEvent) -> None:
-        """Send the alert asynchronously with a different API key than configure() and wait for the response."""
-        cls._ensure_client()
-        await cls._client.send_with_api_key_async(api_key, data)
+    async def send_with_key_async(cls, api_key: str, event: Event) -> SendResult:
+        """Awaitable send with a key override. Never raises — check result.success instead."""
+        if cls._client is None:
+            return SendResult(success=False, error='client not configured')
+        return await cls._client.send_with_key_async(api_key, event)
+
+    @classmethod
+    def _reset(cls) -> None:
+        with _lock:
+            cls._client = None

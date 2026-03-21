@@ -1,111 +1,112 @@
+from __future__ import annotations
+
 import asyncio
-from typing import Optional
+import sys
+import threading
 
-from .event import ApiAlertsEvent
-from .network import _send_event
+from . import network
+from .event import Event
+from .result import SendResult
 
 
-class _Client:
-    """
-    _Client is an internal class for handling API interactions.
-    It is not intended to be used directly by users of the apialerts package.
-    """
+class ApiAlertsClient:
+    """Instance-based client. Use the ApiAlerts singleton for typical use."""
 
-    def __init__(self) -> None:
-        """
-        Initialize the Client with default values.
-        """
-        self.api_key: Optional[str] = None
-        self.debug: bool = False
+    def __init__(self, api_key: str, debug: bool = False) -> None:
+        self._api_key = api_key
+        self._debug = debug
+        self._integration = network._INTEGRATION
+        self._version = network._VERSION
+        self._base_url = network._BASE_URL
 
-    def configure(self, api_key: str = None, debug: bool = False) -> None:
-        """
-        Configure the Client with an API key and debug mode.
+    def set_overrides(self, integration: str, version: str, base_url: str) -> None:
+        self._integration = integration
+        self._version = version
+        self._base_url = base_url
 
-        :param api_key: The API key for authentication.
-        :param debug: Enable debug mode if True.
-        """
-        self.api_key = api_key
-        self.debug = debug
+    def send(self, event: Event) -> None:
+        """Fire-and-forget. Never raises. Critical errors always logged to stderr."""
+        try:
+            if not self._api_key or not self._api_key.strip():
+                print('x (apialerts.com) Error: api key is missing', file=sys.stderr)
+                return
+            if not event.message or not event.message.strip():
+                print('x (apialerts.com) Error: message is required', file=sys.stderr)
+                return
 
-    def send(self, data: ApiAlertsEvent) -> None:
-        """
-        Send the alert asynchronously using the configured API key.
+            def _run() -> None:
+                try:
+                    result = self._post(self._api_key, event)
+                    if self._debug:
+                        if result.success:
+                            print(
+                                f'✓ (apialerts.com) Alert sent to {result.workspace} ({result.channel})',
+                                file=sys.stderr,
+                            )
+                            for w in result.warnings:
+                                print(f'! (apialerts.com) Warning: {w}', file=sys.stderr)
+                        else:
+                            print(f'x (apialerts.com) Error: {result.error}', file=sys.stderr)
+                except Exception as exc:
+                    if self._debug:
+                        print(f'x (apialerts.com) Error: {exc}', file=sys.stderr)
 
-        :param data: The alert request data.
-        """
-        if not self.api_key:
-            print('x (apialerts.com) Error: API Key not provided. Use configure() to set a default key, or pass the key as a parameter to the send_with_api_key function.')
-            return
-        self.send_with_api_key(self.api_key, data)
+            threading.Thread(target=_run, daemon=True).start()
+        except Exception as exc:
+            if self._debug:
+                print(f'x (apialerts.com) Error: {exc}', file=sys.stderr)
 
-    async def send_async(self, data: ApiAlertsEvent) -> None:
-        """
-        Send the alert asynchronously using the configured API key.
+    async def send_async(self, event: Event) -> SendResult:
+        """Awaitable send. Never raises — check result.success instead."""
+        try:
+            if not self._api_key or not self._api_key.strip():
+                return SendResult(success=False, error='api key is missing')
+            if not event.message or not event.message.strip():
+                return SendResult(success=False, error='message is required')
+            loop = asyncio.get_running_loop()
+            result = await loop.run_in_executor(None, lambda: self._post(self._api_key, event))
+            if self._debug:
+                if result.success:
+                    print(
+                        f'✓ (apialerts.com) Alert sent to {result.workspace} ({result.channel})',
+                        file=sys.stderr,
+                    )
+                    for w in result.warnings:
+                        print(f'! (apialerts.com) Warning: {w}', file=sys.stderr)
+                else:
+                    print(f'x (apialerts.com) Error: {result.error}', file=sys.stderr)
+            return result
+        except Exception as exc:
+            return SendResult(success=False, error=str(exc))
 
-        :param data: The alert request data.
-        """
-        if not self.api_key:
-            print('x (apialerts.com) Error: API Key not provided. Use configure() to set a default key, or pass the key as a parameter to the send_with_api_key_async function.')
-            return
-        await self.send_with_api_key_async(self.api_key, data)
+    async def send_with_key_async(self, api_key: str, event: Event) -> SendResult:
+        """Awaitable send with a key override. Never raises — check result.success instead."""
+        try:
+            if not api_key or not api_key.strip():
+                return SendResult(success=False, error='api key is missing')
+            if not event.message or not event.message.strip():
+                return SendResult(success=False, error='message is required')
+            loop = asyncio.get_running_loop()
+            result = await loop.run_in_executor(None, lambda: self._post(api_key, event))
+            if self._debug:
+                if result.success:
+                    print(
+                        f'✓ (apialerts.com) Alert sent to {result.workspace} ({result.channel})',
+                        file=sys.stderr,
+                    )
+                    for w in result.warnings:
+                        print(f'! (apialerts.com) Warning: {w}', file=sys.stderr)
+                else:
+                    print(f'x (apialerts.com) Error: {result.error}', file=sys.stderr)
+            return result
+        except Exception as exc:
+            return SendResult(success=False, error=str(exc))
 
-    def send_with_api_key(self, api_key: str, data: ApiAlertsEvent) -> None:
-        """
-        Send the alert asynchronously using a specified API key.
-
-        :param api_key: The API key for authentication.
-        :param data: The alert request data.
-        """
-        validations = self.validate_event(data)
-        if self.debug:
-            for validation in validations:
-                print(validation)
-        if data.message == '':
-            return
-
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.create_task(_send_event(api_key, data, self.debug))
-        loop.run_until_complete(asyncio.sleep(0))
-
-    async def send_with_api_key_async(self, api_key: str, data: ApiAlertsEvent) -> None:
-        """
-        Send the alert asynchronously using a specified API key.
-
-        :param api_key: The API key for authentication.
-        :param data: The alert request data.
-        """
-        validations = self.validate_event(data)
-        if self.debug:
-            for validation in validations:
-                print(validation)
-        if data.message == '':
-            return
-
-        await _send_event(api_key, data, self.debug)
-
-    @staticmethod
-    def validate_event(event: ApiAlertsEvent) -> [str]:
-        """
-        Validates and updates the event request data.
-        Drops properties if they are not the correct type.
-
-        :return: An array of validation warnings if any.
-        """
-        validations: [str] = []
-
-        if not isinstance(event.message, str):
-            event.message = ''
-            validations += ['x (apialerts.com) Validation: Message must be a string']
-        if not isinstance(event.channel, str):
-            event.channel = None
-            validations += ['! (apialerts.com) Validation: Dropping channel from alert - channel must be a string.']
-        if event.tags is not None and not isinstance(event.tags, list):
-            event.tags = None
-            validations += ['! (apialerts.com) Validation: Dropping tags from alert - tags must be a list of strings']
-        if event.link is not None and not isinstance(event.link, str):
-            event.link = None
-            validations += ['! (apialerts.com) Validation: Dropping link from alert - link must be a list of strings']
-
-        return validations
+    def _post(self, api_key: str, event: Event) -> SendResult:
+        return network.post(
+            api_key=api_key,
+            event=event,
+            integration=self._integration,
+            version=self._version,
+            base_url=self._base_url,
+        )
