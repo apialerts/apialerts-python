@@ -14,6 +14,8 @@ async def main() -> None:
     parser.add_argument('--build', action='store_true', help='Send build notification')
     parser.add_argument('--release', action='store_true', help='Send release notification')
     parser.add_argument('--publish', action='store_true', help='Send publish notification')
+    parser.add_argument('--integration-tests', action='store_true', help='Run integration tests (default when no flag is set)')
+    parser.add_argument('--channel', default='testing', help='Channel for integration test sends')
     args = parser.parse_args()
 
     api_key = os.environ.get('APIALERTS_API_KEY', '')
@@ -67,9 +69,8 @@ async def main() -> None:
             sys.exit(1)
         print(f'✓ Sent to {result.workspace} ({result.channel})')
 
-    else:
-        # Integration test — minimal + full
-        r1 = await ApiAlerts.send_async(Event(message='Python SDK - minimal'))
+    elif args.integration_tests:
+        r1 = await ApiAlerts.send_async(Event(message='Python SDK - minimal', channel=args.channel))
         if not r1.success:
             print(f'Error (minimal): {r1.error}', file=sys.stderr)
             sys.exit(1)
@@ -77,7 +78,7 @@ async def main() -> None:
 
         r2 = await ApiAlerts.send_async(Event(
             message='Python SDK - full',
-            channel='developer',
+            channel=args.channel,
             event='sdk.test',
             title='Integration Test',
             tags=['CI/CD', 'Python'],
@@ -88,6 +89,10 @@ async def main() -> None:
             print(f'Error (full): {r2.error}', file=sys.stderr)
             sys.exit(1)
         print(f'✓ sent to {r2.workspace} ({r2.channel})')
+
+    else:
+        print('Error: pass --build, --release, --publish, or --integration-tests', file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
