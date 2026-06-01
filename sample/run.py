@@ -30,7 +30,7 @@ async def main() -> None:
     if args.build:
         result = await ApiAlerts.send_async(Event(
             channel='developer',
-            event='ci.build',
+            event='ci.sdk.build.python',
             title='Build Passed',
             message='Python - PR build success',
             tags=['CI/CD', 'Python', 'Build'],
@@ -44,7 +44,7 @@ async def main() -> None:
     elif args.release:
         result = await ApiAlerts.send_async(Event(
             channel='developer',
-            event='ci.release',
+            event='ci.sdk.release.python',
             title='Release Build Passed',
             message='Python - Build for publish success',
             tags=['CI/CD', 'Python', 'Build'],
@@ -58,7 +58,7 @@ async def main() -> None:
     elif args.publish:
         result = await ApiAlerts.send_async(Event(
             channel='releases',
-            event='ci.publish',
+            event='ci.sdk.publish.python',
             title='Published',
             message='Python - PyPI publish success',
             tags=['CI/CD', 'Python', 'Deploy'],
