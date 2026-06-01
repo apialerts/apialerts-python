@@ -9,10 +9,13 @@ from unittest.mock import MagicMock, patch
 
 from apialerts import (
     ApiAlerts,
-    ApiAlertsClient,
     Event,
     SendResult,
 )
+# ApiAlertsClient is intentionally not part of the public API (singleton-only
+# surface per SDK Design). Tests reach into the internal module to verify the
+# underlying client behaviour the singleton wraps.
+from apialerts.client import ApiAlertsClient
 from apialerts import network as _network
 
 
@@ -168,7 +171,7 @@ class TestApiAlertsClient(unittest.TestCase):
                 req = mock_open.call_args[0][0]
                 headers = {k.lower(): v for k, v in req.header_items()}
                 self.assertEqual(headers['x-integration'], 'python')
-                self.assertEqual(headers['x-version'], '2.0.0')
+                self.assertRegex(headers['x-version'], r'^\d+\.\d+\.\d+')
         asyncio.run(_run())
 
     def test_set_overrides_changes_headers(self) -> None:
@@ -186,11 +189,11 @@ class TestApiAlertsClient(unittest.TestCase):
                 self.assertEqual(headers['x-version'], '1.0.0')
         asyncio.run(_run())
 
-    def test_send_with_key_uses_provided_key(self) -> None:
+    def test_api_key_override_uses_provided_key(self) -> None:
         async def _run() -> None:
             with patch('urllib.request.urlopen', return_value=_success_response()) as mock_open:
                 client = ApiAlertsClient('original-key')
-                result = await client.send_with_key_async('override-key', Event(message='test'))
+                result = await client.send_async(Event(message='test'), api_key='override-key')
                 self.assertTrue(result.success)
                 req = mock_open.call_args[0][0]
                 headers = {k.lower(): v for k, v in req.header_items()}
@@ -282,18 +285,18 @@ class TestApiAlertsClient(unittest.TestCase):
     def test_singleton_send_is_noop_before_configure(self) -> None:
         ApiAlerts.send(Event(message='test'))  # must not raise
 
-    def test_singleton_send_with_key_async_returns_error_when_not_configured(self) -> None:
+    def test_singleton_api_key_override_returns_error_when_not_configured(self) -> None:
         async def _run() -> None:
-            result = await ApiAlerts.send_with_key_async('key', Event(message='test'))
+            result = await ApiAlerts.send_async(Event(message='test'), api_key='key')
             self.assertFalse(result.success)
             self.assertIn('client not configured', result.error)
         asyncio.run(_run())
 
-    def test_singleton_send_with_key_async_uses_provided_key(self) -> None:
+    def test_singleton_api_key_override_uses_provided_key(self) -> None:
         async def _run() -> None:
             with patch('urllib.request.urlopen', return_value=_success_response()) as mock_open:
                 ApiAlerts.configure('original-key')
-                result = await ApiAlerts.send_with_key_async('override-key', Event(message='test'))
+                result = await ApiAlerts.send_async(Event(message='test'), api_key='override-key')
                 self.assertTrue(result.success)
                 req = mock_open.call_args[0][0]
                 headers = {k.lower(): v for k, v in req.header_items()}

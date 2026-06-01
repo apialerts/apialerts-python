@@ -34,7 +34,7 @@ dependencies = []
 
 [project.urls]
 Homepage = "https://apialerts.com"
-Documentation = "https://apialerts.com/docs/python"
+Documentation = "https://apialerts.com/docs/sdks/python"
 Repository = "https://github.com/apialerts/apialerts-python"
 Issues = "https://github.com/apialerts/apialerts-python/issues"
 

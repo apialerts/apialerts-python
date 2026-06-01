@@ -25,7 +25,7 @@ ApiAlerts.send(Event(message='Deploy complete'))
 
 ## Usage
 
-### Global singleton (recommended)
+### Global singleton
 
 Call `configure` once at startup, then use `send` / `send_async` anywhere.
 
@@ -34,10 +34,11 @@ from apialerts import ApiAlerts, Event
 
 ApiAlerts.configure('your-api-key')
 
-# Fire-and-forget — never raises
+# Fire-and-forget. Never raises, silently drops errors.
+# Pass debug=True to configure() to log them via stdlib logging.
 ApiAlerts.send(Event(message='Deploy complete'))
 
-# Or get the result back — also never raises
+# Or get the result back. Never raises, check result.success.
 result = await ApiAlerts.send_async(Event(message='Deploy complete'))
 if result.success:
     print(f'Sent to {result.workspace} ({result.channel})')
@@ -45,9 +46,23 @@ else:
     print(f'Error: {result.error}')
 ```
 
+### Enable debug logging
+
+```python
+ApiAlerts.configure('your-api-key', debug=True)
+```
+
+The SDK uses Python's stdlib `logging` module under the logger name `'apialerts'`. Critical errors (missing API key, not yet configured) always log via `logger.error(...)`. Debug success/warning messages log via `logger.info(...)` and only fire when `debug=True`. Configure the `apialerts` logger to route output anywhere you like:
+
+```python
+import logging
+logging.getLogger('apialerts').setLevel(logging.INFO)
+logging.basicConfig()
+```
+
 ### Event fields
 
-Only `message` is required. All other fields are optional.
+Only `message` is required. All other fields are optional and omitted from the request body when not set.
 
 ```python
 from apialerts import Event
@@ -59,47 +74,44 @@ event = Event(
     title='Deployed',
     tags=['CI/CD', 'Python'],
     link='https://github.com/apialerts/apialerts-python/actions',
-    data={'version': '2.0.0'},
+    data={'version': '1.2.0'},
 )
+
+result = await ApiAlerts.send_async(event)
 ```
 
-| Field     | Type             | Required | Description                      |
-|-----------|------------------|----------|----------------------------------|
-| `message` | `str`            | Yes      | Main notification message        |
-| `channel` | `str`            | No       | Target channel name              |
-| `event`   | `str`            | No       | Event key (e.g. `ci.deploy`)     |
-| `title`   | `str`            | No       | Short title                      |
-| `tags`    | `list[str]`      | No       | Categorisation tags              |
-| `link`    | `str`            | No       | URL attached to the notification |
-| `data`    | `dict[str, Any]` | No       | Arbitrary key-value metadata     |
-
-### Instance-based client
-
-Use `ApiAlertsClient` directly when you need multiple clients or full
-lifecycle control.
-
-```python
-from apialerts import ApiAlertsClient, Event
-
-client = ApiAlertsClient('your-api-key', debug=True)
-result = await client.send_async(Event(message='Deploy complete'))
-if result.success:
-    print(f'Sent to {result.workspace} ({result.channel})')
-else:
-    print(f'Error: {result.error}')
-```
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `message` | `str` | Yes | Human-readable notification text. This is what appears on the push notification lock screen. |
+| `channel` | `str` | No | Workspace channel the push notification fires on. Defaults to the workspace default channel when omitted. |
+| `event` | `str` | No | Identifies what kind of thing happened. Optional but recommended. Use dotted notation (e.g. `ci.deploy.success`, `payment.failed`, `user.signup`) so routing rules can match glob patterns like `ci.*` or `*.failed`. |
+| `title` | `str` | No | Short headline some destinations render separately from the message body. |
+| `tags` | `list[str]` | No | Categorisation tags for filtering and search. |
+| `link` | `str` | No | URL associated with the event. Available as a deeplink for push notifications and as a call-to-action for routed destinations. |
+| `data` | `dict[str, Any]` | No | Arbitrary key-value metadata. Available to non-push destinations for templating (Slack message bodies, email templates, webhook payloads). |
 
 ### Send to multiple workspaces
 
+Pass an `api_key` as the optional second argument to override the configured key for one call.
+
 ```python
-result = await ApiAlerts.send_with_key_async('other-api-key', Event(message='Deploy complete'))
-if result.success:
-    print(f'Sent to {result.workspace} ({result.channel})')
+ApiAlerts.send(Event(message='Deploy complete'), api_key='other-workspace-api-key')
+
+result = await ApiAlerts.send_async(
+    Event(message='Deploy complete'),
+    api_key='other-workspace-api-key',
+)
 ```
 
-### SendResult fields
+## API
 
-`send_async()` and `send_with_key_async()` always return a `SendResult` — they never raise.
+| Method | Description |
+|---|---|
+| `ApiAlerts.configure(api_key, debug=False)` | Initialise the singleton. First call wins; subsequent calls are no-ops. |
+| `ApiAlerts.send(event, api_key=None)` | Fire-and-forget. Never raises, drops errors silently unless `debug` is on. |
+| `ApiAlerts.send_async(event, api_key=None)` | Awaitable, returns `SendResult`. Never raises; check `result.success`. |
+
+### SendResult fields
 
 | Field       | Type            | Description                            |
 |-------------|-----------------|----------------------------------------|

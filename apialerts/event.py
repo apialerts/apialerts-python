@@ -6,6 +6,32 @@ from typing import Any, Dict, List, Optional
 
 @dataclass
 class Event:
+    """A single notification dispatched to API Alerts.
+
+    Only ``message`` is required. All other fields are optional and
+    omitted from the request body when None.
+
+    Attributes:
+        message: Human-readable notification text. Required. This is
+            what appears on the push notification lock screen.
+        channel: Workspace channel the push notification fires on.
+            Defaults to the workspace default channel when omitted.
+        event: Identifies what kind of thing happened. Optional but
+            recommended. Use dotted notation (e.g.
+            ``ci.deploy.success``, ``payment.failed``, ``user.signup``)
+            so routing rules can match glob patterns like ``ci.*`` or
+            ``*.failed``.
+        title: Short headline some destinations render separately from
+            the message body.
+        tags: Categorisation tags for filtering and search.
+        link: URL associated with the event. Available as a deeplink
+            for push notifications and as a call-to-action for routed
+            destinations.
+        data: Arbitrary key-value metadata. Available to non-push
+            destinations for templating (Slack message bodies, email
+            templates, webhook payloads).
+    """
+
     message: str
     channel: Optional[str] = None
     event: Optional[str] = None

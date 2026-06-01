@@ -1,4 +1,4 @@
-"""Integration test sample — requires APIALERTS_API_KEY env var."""
+"""Integration test sample - requires APIALERTS_API_KEY env var."""
 from __future__ import annotations
 
 import argparse

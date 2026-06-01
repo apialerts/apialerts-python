@@ -11,6 +11,7 @@ from .result import SendResult
 _INTEGRATION = 'python'
 _VERSION = '1.2.0'
 _BASE_URL = 'https://api.apialerts.com/event'
+_TIMEOUT_SECONDS = 30
 
 
 def post(
@@ -33,7 +34,7 @@ def post(
         },
     )
     try:
-        with urllib.request.urlopen(req) as response:
+        with urllib.request.urlopen(req, timeout=_TIMEOUT_SECONDS) as response:
             raw: str = response.read().decode('utf-8')
     except urllib.error.HTTPError as exc:
         return _result_for_status(exc.code)
@@ -57,7 +58,7 @@ def _result_for_status(status: int) -> SendResult:
     if status == 400:
         return SendResult(success=False, error='bad request')
     if status == 401:
-        return SendResult(success=False, error='unauthorized — check your api key')
+        return SendResult(success=False, error='unauthorized, check your api key')
     if status == 403:
         return SendResult(success=False, error='forbidden')
     if status == 429:
