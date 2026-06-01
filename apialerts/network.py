@@ -1,59 +1,66 @@
-import aiohttp
-import certifi
-import dataclasses
+from __future__ import annotations
+
 import json
-import ssl
+import urllib.error
+import urllib.request
 from typing import Any, Dict
-from .constants import _X_INTEGRATION, _X_VERSION, _BASE_URL
-from .event import ApiAlertsEvent
+
+from .event import Event
+from .result import SendResult
+
+_INTEGRATION = 'python'
+_VERSION = '1.2.0'
+_BASE_URL = 'https://api.apialerts.com/event'
+_TIMEOUT_SECONDS = 30
 
 
-async def _send_event(api_key: str, payload: ApiAlertsEvent, debug: bool) -> None:
-    """
-    Send a POST request to the API Alerts service.
-
-    :param api_key: The API key for authentication.
-    :param payload: The alert request data.
-    :param debug: Enable debug mode if True.
-    """
-    headers = {
-        'Authorization': f'Bearer {api_key}',
-        'Content-Type': 'application/json',
-        'X-Integration': _X_INTEGRATION,
-        'X-Version': _X_VERSION,
-    }
+def post(
+    api_key: str,
+    event: Event,
+    integration: str = _INTEGRATION,
+    version: str = _VERSION,
+    base_url: str = _BASE_URL,
+) -> SendResult:
+    body = json.dumps(event._to_dict()).encode('utf-8')
+    req = urllib.request.Request(
+        url=base_url,
+        data=body,
+        method='POST',
+        headers={
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json',
+            'X-Integration': integration,
+            'X-Version': version,
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=_TIMEOUT_SECONDS) as response:
+            raw: str = response.read().decode('utf-8')
+    except urllib.error.HTTPError as exc:
+        return _result_for_status(exc.code)
+    except Exception as exc:
+        return SendResult(success=False, error=str(exc))
 
     try:
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        body = dataclasses.asdict(payload)
-        connector = aiohttp.TCPConnector(ssl=ssl_context)
-        async with aiohttp.ClientSession(connector=connector) as session:
-            async with session.post(_BASE_URL, headers=headers, json=body) as response:
-                if debug:
-                    await __handle_response(response)
-    except Exception as e:
-        if debug:
-            print(f'x (apialerts.com) Error: {e}')
+        data: Dict[str, Any] = json.loads(raw)
+        warnings = data.get('warnings') or []
+        return SendResult(
+            success=True,
+            workspace=data.get('workspace'),
+            channel=data.get('channel'),
+            warnings=warnings if isinstance(warnings, list) else [],
+        )
+    except (KeyError, json.JSONDecodeError):
+        return SendResult(success=False, error='invalid response from server')
 
 
-async def __handle_response(response: aiohttp.ClientResponse) -> None:
-    """
-    Handle the response from the API Alerts service.
-
-    :param response: The response object from the POST request.
-    """
-    response_text = await response.text()
-    if response.status == 200 and response_text:
-        response_data: Dict[str, Any] = json.loads(response_text)
-        workspace = response_data.get('workspace')
-        channel = response_data.get('channel')
-        print(f'✓ (apialerts.com) Alert sent to {workspace or "?"} ({channel or "?"}).')
-        errors = response_data.get('errors') or []
-        for error in errors:
-            print(f'! (apialerts.com) Warning: {error}')
-    elif response.status != 200 and response_text and response_text.startswith('{'):
-        response_data: Dict[str, Any] = json.loads(response_text)
-        message = response_data.get('message')
-        print(f'x (apialerts.com) Error: {message or "?"}')
-    else:
-        print(f'x (apialerts.com) Error: Something went wrong {response.status}')
+def _result_for_status(status: int) -> SendResult:
+    if status == 400:
+        return SendResult(success=False, error='bad request')
+    if status == 401:
+        return SendResult(success=False, error='unauthorized, check your api key')
+    if status == 403:
+        return SendResult(success=False, error='forbidden')
+    if status == 429:
+        return SendResult(success=False, error='rate limit exceeded')
+    return SendResult(success=False, error=f'unexpected status: {status}')

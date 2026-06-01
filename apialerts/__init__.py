@@ -1,18 +1,23 @@
 """
-API Alerts  Wrapper
-~~~~~~~~~~~~~~~~~~~
+API Alerts Python SDK
+~~~~~~~~~~~~~~~~~~~~~
 
-A basic wrapper for the API Alerts API.
-
-:copyright: (c) Copyright 2025 Jared Hall
-:license: MIT, see LICENSE for more details.
+:copyright: (c) Copyright 2025 API Alerts
+:license: MIT
 """
 
-__title__ = 'apialerts-python'
+__title__ = 'apialerts'
 __author__ = 'apialerts'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2025 API Alerts'
-__version__ = '1.1.3'
+__version__ = '1.2.0'
 
 from .apialerts import ApiAlerts
-from .event import ApiAlertsEvent
+from .event import Event
+from .result import SendResult
+
+__all__ = [
+    'ApiAlerts',
+    'Event',
+    'SendResult',
+]
