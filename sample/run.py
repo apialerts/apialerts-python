@@ -35,6 +35,7 @@ async def main() -> None:
             message='Python - PR build success',
             tags=['CI/CD', 'Python', 'Build'],
             link=link,
+            data={'integration': 'python'},
         ))
         if not result.success:
             print(f'Error: {result.error}', file=sys.stderr)
@@ -49,6 +50,7 @@ async def main() -> None:
             message='Python - Build for publish success',
             tags=['CI/CD', 'Python', 'Build'],
             link=link,
+            data={'integration': 'python'},
         ))
         if not result.success:
             print(f'Error: {result.error}', file=sys.stderr)
@@ -63,6 +65,7 @@ async def main() -> None:
             message='Python - PyPI publish success',
             tags=['CI/CD', 'Python', 'Deploy'],
             link=link,
+            data={'integration': 'python'},
         ))
         if not result.success:
             print(f'Error: {result.error}', file=sys.stderr)
@@ -79,11 +82,11 @@ async def main() -> None:
         r2 = await ApiAlerts.send_async(Event(
             message='Python SDK - full',
             channel=args.channel,
-            event='sdk.test',
+            event='ci.sdk.integration.python',
             title='Integration Test',
             tags=['CI/CD', 'Python'],
             link=link,
-            data={'version': '2.0.0'},
+            data={'integration': 'python'},
         ))
         if not r2.success:
             print(f'Error (full): {r2.error}', file=sys.stderr)
